@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 
 const app = express()
-const JWT_SECRET = "hospital_secret_key_change_in_production"
+const JWT_SECRET = process.env.JWT_SECRET || "hospital_secret"
 app.use(cors())
 app.use(express.json())
 
@@ -132,7 +132,7 @@ app.get("/api/my-prescriptions", authenticateToken, authorizeRole("patient"), (r
   })
 })
 
-const PORT = 5000
+const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
 
 // PAYMENTS ROUTES
