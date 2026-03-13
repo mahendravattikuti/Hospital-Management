@@ -1,5 +1,4 @@
 const BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000"
-
 export const api = async (endpoint, method = "GET", body = null, token = null) => {
   const headers = { "Content-Type": "application/json" }
   if (token) headers["Authorization"] = `Bearer ${token}`
