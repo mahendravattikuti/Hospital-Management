@@ -54,7 +54,7 @@ export default function Register() {
               <div className="form-group"><div className="form-label">Email Address</div><div className="input-wrap"><span className="material-symbols-outlined">mail</span><input type="email" placeholder="john@example.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div></div>
               <div className="form-group">
                 <div className="form-label">Password</div>
-                <div className="input-wrap"><span className="material-symbols-outlined">lock</span><input type={showPw?"text":"password"} placeholder="••••••••" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} /><button className="toggle-pw" onClick={()=>setShowPw(!showPw)}><span className="material-symbols-outlined">{showPw?"visibility_off":"visibility"}</span></button></div>
+                <div className="input-wrap"><span className="material-symbols-outlined">lock</span><input type={showPw?"text":"password"} placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} /><button className="toggle-pw" onClick={()=>setShowPw(!showPw)}><span className="material-symbols-outlined">{showPw?"visibility_off":"visibility"}</span></button></div>
               </div>
               <button className="btn-primary" onClick={handleSubmit} disabled={loading} style={{marginTop:".5rem"}}>{loading?"Creating...":"Create Account"}<span className="material-symbols-outlined">arrow_forward</span></button>
               <div className="divider">Already have an account?</div>
@@ -63,7 +63,7 @@ export default function Register() {
           </div>
         </div>
       </div>
-      <footer className="auth-page-footer"><p>© 2024 CareSync HMS. All rights reserved.</p><div className="auth-page-footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Help</a></div></footer>
+      <footer className="auth-page-footer"><p>ï¿½ 2024 CareSync HMS. All rights reserved.</p><div className="auth-page-footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Help</a></div></footer>
     </div>
   )
 }
