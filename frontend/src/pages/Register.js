@@ -19,7 +19,7 @@ export default function Register() {
     <div className="auth-page">
       <nav className="auth-nav">
         <div className="auth-nav-brand"><div className="brand-icon"><span className="material-symbols-outlined">medical_services</span></div><span className="brand-name">CareSync HMS</span></div>
-        <div className="auth-nav-links"><a href="#">Home</a><a href="#">About</a><a href="#">Contact</a><Link to="/login" className="btn-outline">Login</Link></div>
+        <div className="auth-nav-links"><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Home</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>About</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Contact</button><Link to="/login" className="btn-outline">Login</Link></div>
       </nav>
       <div className="auth-main">
         <div className="auth-grid">
@@ -63,7 +63,7 @@ export default function Register() {
           </div>
         </div>
       </div>
-      <footer className="auth-page-footer"><p>� 2024 CareSync HMS. All rights reserved.</p><div className="auth-page-footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Help</a></div></footer>
+      <footer className="auth-page-footer"><p>© 2024 CareSync HMS. All rights reserved.</p><div className="auth-page-footer-links"><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Privacy</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Terms</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Help</button></div></footer>
     </div>
   )
 }

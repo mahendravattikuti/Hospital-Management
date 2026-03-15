@@ -23,7 +23,7 @@ export default function Login() {
     <div className="auth-page">
       <nav className="auth-nav">
         <div className="auth-nav-brand"><div className="brand-icon"><span className="material-symbols-outlined">local_hospital</span></div><span className="brand-name">HMS Portal</span></div>
-        <div className="auth-nav-links"><a href="#">Home</a><a href="#">About</a><a href="#">Contact</a><Link to="/register" className="btn-outline">Register</Link></div>
+        <div className="auth-nav-links"><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Home</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>About</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Contact</button><Link to="/register" className="btn-outline">Register</Link></div>
       </nav>
       <div className="auth-main">
         <div className="auth-card" style={{maxWidth:480,margin:"0 auto"}}>
@@ -36,7 +36,7 @@ export default function Login() {
               <div className="input-wrap"><span className="material-symbols-outlined">mail</span><input type="email" placeholder="doctor@hospital.com" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} onKeyDown={e=>e.key==="Enter"&&handleSubmit()} /></div>
             </div>
             <div className="form-group">
-              <div className="form-label">Password<a href="#">Forgot?</a></div>
+              <div className="form-label">Password<button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'#4CAF50',fontSize:'0.85rem'}}>Forgot?</button></div>
               <div className="input-wrap"><span className="material-symbols-outlined">lock</span><input type={showPw?"text":"password"} placeholder="Enter your password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} onKeyDown={e=>e.key==="Enter"&&handleSubmit()} /><button className="toggle-pw" onClick={()=>setShowPw(!showPw)}><span className="material-symbols-outlined">{showPw?"visibility_off":"visibility"}</span></button></div>
             </div>
             <button className="btn-primary" onClick={handleSubmit} disabled={loading}>{loading?"Signing in...":"Sign In"}<span className="material-symbols-outlined">login</span></button>
@@ -45,7 +45,7 @@ export default function Login() {
           </div>
         </div>
       </div>
-      <footer className="auth-page-footer"><p>© 2024 City General Hospital Management System. All rights reserved.</p><div className="auth-page-footer-links"><a href="#">Privacy Policy</a><a href="#">Terms of Service</a><a href="#">Help Center</a></div></footer>
+      <footer className="auth-page-footer"><p>Â© 2024 City General Hospital Management System. All rights reserved.</p><div className="auth-page-footer-links"><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Privacy Policy</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Terms of Service</button><button onClick={()=>{}} style={{background:'none',border:'none',cursor:'pointer',color:'inherit'}}>Help Center</button></div></footer>
     </div>
   )
 }
