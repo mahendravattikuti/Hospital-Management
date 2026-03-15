@@ -1,96 +1,95 @@
-const sqlite3 = require("sqlite3").verbose()
+const { Pool } = require("pg")
+require("dotenv").config()
 
-const db = new sqlite3.Database("./hospital.db", (err) => {
-  if (err) {
-    console.error(err.message)
-  } else {
-    console.log("Connected to SQLite database")
-  }
+// Supabase connection using PostgreSQL pool
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false,
 })
 
-// ✅ Create tables first, then export
-db.exec(`
--- USERS TABLE
-CREATE TABLE IF NOT EXISTS users (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- name TEXT NOT NULL,
- email TEXT UNIQUE NOT NULL,
- password TEXT NOT NULL,
- role TEXT CHECK(role IN ('admin','doctor','patient','staff')) NOT NULL,
- created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+pool.on("connect", () => {
+  console.log("Connected to Supabase PostgreSQL database")
+})
 
--- DOCTORS TABLE
-CREATE TABLE IF NOT EXISTS doctors (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- user_id INTEGER,
- specialization TEXT,
- experience INTEGER,
- consultation_fee INTEGER,
- FOREIGN KEY(user_id) REFERENCES users(id)
-);
+pool.on("error", (err) => {
+  console.error("Unexpected error on idle client", err)
+})
 
--- PATIENTS TABLE
-CREATE TABLE IF NOT EXISTS patients (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- user_id INTEGER,
- age INTEGER,
- gender TEXT,
- blood_group TEXT,
- allergies TEXT,
- medical_history TEXT,
- FOREIGN KEY(user_id) REFERENCES users(id)
-);
+// Initialize database tables
+const initializeDatabase = async () => {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name TEXT NOT NULL,
+        email TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL,
+        role TEXT CHECK(role IN ('admin','doctor','patient','staff')) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
--- APPOINTMENTS TABLE
-CREATE TABLE IF NOT EXISTS appointments (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- doctor_id INTEGER,
- patient_id INTEGER,
- appointment_date DATETIME,
- status TEXT DEFAULT 'pending',
- FOREIGN KEY(doctor_id) REFERENCES doctors(id),
- FOREIGN KEY(patient_id) REFERENCES patients(id)
-);
+      CREATE TABLE IF NOT EXISTS doctors (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        specialization TEXT,
+        experience INTEGER,
+        consultation_fee INTEGER
+      );
 
--- PRESCRIPTIONS TABLE
-CREATE TABLE IF NOT EXISTS prescriptions (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- doctor_id INTEGER,
- patient_id INTEGER,
- appointment_id INTEGER,
- medications TEXT,
- instructions TEXT,
- avoid_items TEXT,
- created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
- FOREIGN KEY(doctor_id) REFERENCES doctors(id),
- FOREIGN KEY(patient_id) REFERENCES patients(id),
- FOREIGN KEY(appointment_id) REFERENCES appointments(id)
-);
+      CREATE TABLE IF NOT EXISTS patients (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+        age INTEGER,
+        gender TEXT,
+        blood_group TEXT,
+        allergies TEXT,
+        medical_history TEXT
+      );
 
--- PAYMENTS TABLE
-CREATE TABLE IF NOT EXISTS payments (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- patient_id INTEGER,
- appointment_id INTEGER,
- amount INTEGER,
- payment_method TEXT,
- payment_status TEXT,
- transaction_id TEXT,
- FOREIGN KEY(patient_id) REFERENCES patients(id),
- FOREIGN KEY(appointment_id) REFERENCES appointments(id)
-);
+      CREATE TABLE IF NOT EXISTS appointments (
+        id SERIAL PRIMARY KEY,
+        doctor_id INTEGER REFERENCES doctors(id) ON DELETE CASCADE,
+        patient_id INTEGER REFERENCES patients(id) ON DELETE CASCADE,
+        appointment_date TIMESTAMP,
+        status TEXT DEFAULT 'pending'
+      );
 
--- DOCTOR AVAILABILITY TABLE
-CREATE TABLE IF NOT EXISTS doctor_availability (
- id INTEGER PRIMARY KEY AUTOINCREMENT,
- doctor_id INTEGER,
- available_date DATE,
- start_time TEXT,
- end_time TEXT,
- FOREIGN KEY(doctor_id) REFERENCES doctors(id)
-);
-`)
+      CREATE TABLE IF NOT EXISTS prescriptions (
+        id SERIAL PRIMARY KEY,
+        doctor_id INTEGER REFERENCES doctors(id) ON DELETE CASCADE,
+        patient_id INTEGER REFERENCES patients(id) ON DELETE CASCADE,
+        appointment_id INTEGER REFERENCES appointments(id) ON DELETE CASCADE,
+        medications TEXT,
+        instructions TEXT,
+        avoid_items TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
 
-// ✅ Only ONE module.exports at the end
-module.exports = db
+      CREATE TABLE IF NOT EXISTS payments (
+        id SERIAL PRIMARY KEY,
+        patient_id INTEGER REFERENCES patients(id) ON DELETE CASCADE,
+        appointment_id INTEGER REFERENCES appointments(id) ON DELETE CASCADE,
+        amount INTEGER,
+        payment_method TEXT,
+        payment_status TEXT,
+        transaction_id TEXT
+      );
+
+      CREATE TABLE IF NOT EXISTS doctor_availability (
+        id SERIAL PRIMARY KEY,
+        doctor_id INTEGER REFERENCES doctors(id) ON DELETE CASCADE,
+        available_date DATE,
+        start_time TEXT,
+        end_time TEXT
+      );
+    `)
+    console.log("Database tables initialized successfully")
+  } catch (err) {
+    console.error("Error initializing database:", err.message)
+  }
+}
+
+// Initialize on start
+initializeDatabase()
+
+module.exports = pool

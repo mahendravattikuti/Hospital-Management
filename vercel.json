@@ -1,19 +1,21 @@
 {
   "version": 2,
-  "buildCommand": "npm install && npm run build",
-  "outputDirectory": "build",
-  "public": true,
-  "github": {
-    "silent": true
+  "buildCommand": "npm install --legacy-peer-deps",
+  "outputDirectory": "frontend/build",
+  "framework": "react",
+  "env": {
+    "REACT_APP_API_URL": "@react_app_api_url"
   },
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "headers": [
     {
-      "source": "/api/:path*",
-      "destination": "/api/:path*"
-    },
-    {
-      "source": "/:path*",
-      "destination": "/index.html"
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, s-maxage=0, must-revalidate" }
+      ]
     }
   ]
 }

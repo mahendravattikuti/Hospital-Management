@@ -10,9 +10,17 @@ export default function Register() {
   const navigate = useNavigate()
   const handleSubmit = async () => {
     setError(""); setSuccess(""); setLoading(true)
-    try { await api("/api/register","POST",form); setSuccess("Account created! Redirecting..."); setTimeout(()=>navigate("/login"),1500) }
-    catch(err){ setError(err.message) }
-    finally{ setLoading(false) }
+    try { 
+      await api("/register","POST",form)
+      setSuccess("Account created! Redirecting..."); 
+      setTimeout(()=>navigate("/login"),1500) 
+    }
+    catch(err){ 
+      setError(err.message) 
+    }
+    finally{ 
+      setLoading(false) 
+    }
   }
   const roles=[{value:"patient",label:"Patient",icon:"person"},{value:"doctor",label:"Doctor",icon:"stethoscope"},{value:"admin",label:"Admin",icon:"admin_panel_settings"}]
   return (
