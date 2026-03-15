@@ -185,61 +185,16 @@ app.get("/api/payments", authenticateToken, authorizeRole("admin"), async (req, 
   }
 })
 
+app.get("/api/my-payments", authenticateToken, authorizeRole("patient"), async (req, res) => {
+  try {
+    const result = await db.query("SELECT p.id, p.amount, p.payment_method, p.payment_status, p.transaction_id, a.appointment_date, u_doctor.name AS doctor_name FROM payments p JOIN appointments a ON p.appointment_id = a.id JOIN users u_doctor ON a.doctor_id = u_doctor.id WHERE p.patient_id = $1 ORDER BY p.id DESC", [req.user.id])
+    res.json(result.rows)
+  } catch (err) {
+    console.error("Error fetching payments:", err)
+    res.status(500).json({ message: err.message })
+  }
+})
+
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
-  db.get("SELECT * FROM appointments WHERE id = ? AND patient_id = ?", [appointment_id, patient_id], (err, appointment) => {
-    if (err) return res.status(500).json({ message: err.message })
-    if (!appointment) return res.status(404).json({ message: "Appointment not found or does not belong to you" })
 
-    // Check not already paid
-    db.get("SELECT * FROM payments WHERE appointment_id = ?", [appointment_id], (err, existing) => {
-      if (err) return res.status(500).json({ message: err.message })
-      if (existing) return res.status(400).json({ message: "Payment already made for this appointment" })
-
-      const transaction_id = "TXN" + Date.now()
-
-      db.run("INSERT INTO payments (patient_id, appointment_id, amount, payment_method, payment_status, transaction_id) VALUES (?, ?, ?, ?, 'completed', ?)",
-        [patient_id, appointment_id, amount, payment_method, transaction_id],
-        function (err) {
-          if (err) return res.status(500).json({ message: err.message })
-          res.json({ message: "Payment successful", paymentId: this.lastID, transaction_id })
-        }
-      )
-    })
-  })
-})
-
-// Admin - view all payments
-app.get("/api/payments", authenticateToken, authorizeRole("admin"), (req, res) => {
-  const sql = `
-    SELECT p.id, p.amount, p.payment_method, p.payment_status, p.transaction_id,
-      u.name AS patient_name, u.email AS patient_email,
-      a.appointment_date
-    FROM payments p
-    JOIN users u ON p.patient_id = u.id
-    JOIN appointments a ON p.appointment_id = a.id
-    ORDER BY p.id DESC
-  `
-  db.all(sql, [], (err, rows) => {
-    if (err) return res.status(500).json({ message: err.message })
-    res.json(rows)
-  })
-})
-
-// Patient - view own payments
-app.get("/api/my-payments", authenticateToken, authorizeRole("patient"), (req, res) => {
-  const sql = `
-    SELECT p.id, p.amount, p.payment_method, p.payment_status, p.transaction_id,
-      a.appointment_date,
-      u_doctor.name AS doctor_name
-    FROM payments p
-    JOIN appointments a ON p.appointment_id = a.id
-    JOIN users u_doctor ON a.doctor_id = u_doctor.id
-    WHERE p.patient_id = ?
-    ORDER BY p.id DESC
-  `
-  db.all(sql, [req.user.id], (err, rows) => {
-    if (err) return res.status(500).json({ message: err.message })
-    res.json(rows)
-  })
-})
